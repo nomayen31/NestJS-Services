@@ -4,10 +4,11 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { UserController } from './user/user.controller';
 import { ProductService } from './product/product.service';
 import { ProductController } from './product/product.controller';
+import { EmployeeModule } from './employee/employee.module';
 
 
 @Module({
-  imports: [AuthModule, BookmarkModule],
+  imports: [AuthModule, BookmarkModule, EmployeeModule],
   controllers: [UserController, ProductController],
   providers: [ProductService],
 })
