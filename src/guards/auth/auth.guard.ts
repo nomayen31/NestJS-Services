@@ -4,18 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-
-    // Expect header: Authorization: Bearer <token>
     const authHeader = request.headers['authorization'] || request.headers['Authorization'];
+
     if (!authHeader) {
       throw new UnauthorizedException('Missing Authorization header');
     }
@@ -28,15 +24,10 @@ export class AuthGuard implements CanActivate {
     const token = parts[1];
 
     try {
-      // Use environment variable for secret, fallback to a default only for dev (avoid in production)
       const secret = process.env.JWT_SECRET || 'change_this_secret_in_production';
-
-      // verify returns the decoded payload if valid
-      const payload = jwt.verify(token, secret);
-
-      // Attach user info (payload) to request for controllers to use
+      const payload = jwt.verify(token, secret as jwt.Secret);
+      // attach user (payload) to request
       request.user = payload;
-
       return true;
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
